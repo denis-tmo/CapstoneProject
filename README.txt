@@ -1,7 +1,8 @@
 # CapstoneProject
 Deploy a Retrieval-Augmented Generation (RAG) application in Flask.
 
-Capstone project
+Please get the Capstone project:
+git clone https://github.com/denis-tmo/CapstoneProject.git
 
 Unfortunately I was not able to launch my application on fly.io so I am using Flask.
  ✖ Failed: error creating a new machine: failed to launch VM: Your organization has reached its machine limit. Please contact billing@fly.io
