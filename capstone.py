@@ -35,7 +35,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-dkl_fly = 1
+dkl_fly = 0
 
 app_flask = Flask(__name__)
 app_flask.secret_key = "abc" 
@@ -292,7 +292,7 @@ async def post_form():
 
     global first, messages_and_responses
 
-#    print(f'post_form -- {first} method: {request.method}')
+    print(f'post_form -- {first} method: {request.method}')
     if first:
         first = False
         messages_and_responses = []

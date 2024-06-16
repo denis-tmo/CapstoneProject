@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat with LLM</title>
+</head>
+<style>
+    .wide-input {
+        width: 80%;
+    }
+    .medium-input {
+        width: 30%;
+    }
+    .full-input {
+        width: 100%;
+    }
+    .separator {
+        margin: 20px 0;
+        border: 2px dashed #6b82e1;
+
+    }
+    .center-container {
+        text-align: center;
+    }
+</style>
+<body>
+    <div >
+        <form id="capstone" method="post">
+            <div class="center-container">
+                <label for="message">Your question:</label>
+            </div>
+
+            <input type="text" id="message" name="message" required class="wide-input">
+        
+            <br><br>
+
+            <div class="center-container">
+
+            <label for="selection">Choose an option:</label>
+            <br>
+            <select id="selection" name="selection" required class="medium-input">
+                <option value="option_1">1. Ask questions as a 'chat message' in the OpenAI ChatML format</option>
+                <option value="option_2">2. Ask questions about Napoleon Bonaparte using a qdrant search</option>
+                <option value="option_3">3. Ask questions about Napoleon Bonaparte using LLM</option>
+                <option value="option_4">4. Ask questions about Napoleon Bonaparte using Lama-Cloud, LlamaParse</option>
+                <option value="option_5">5. Ask questions about Napoleon Bonaparte using Langchain</option>
+            </select>
+            </div>
+            <br><br>
+
+            <div class="center-container">
+                <hr class="separator" required class="full-input">
+                <button type="submit">Send</button>
+                <hr class="separator" required class="full-input">
+            </div>
+        </div>
+    </form>
+
+        {% if messages_and_responses %}
+            {% for item in messages_and_responses %}
+                <p><strong>Question: </strong> {{item.message }}</p>
+                <p><strong>  Answer: </strong></p><p> {{item.response }}</p>
+                <hr>
+            {% endfor %}
+        {% endif %}
+    </div>
+</body>
+<script> 
+</script> 
+</html>
