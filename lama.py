@@ -33,10 +33,10 @@ async def init_lama():
     nest_asyncio.apply()
 
     # API access to llama-cloud
-    os.environ["LLAMA_CLOUD_API_KEY"] = "llx-AeNyqvRRuEvvT9uTPm6HgsWc6wJlFktF2bXu3xvQ16pu8doh"
+    os.environ["LLAMA_CLOUD_API_KEY"] = "YOUR-KEY"
 
     # Using OpenAI API for embeddings/llms
-    os.environ["OPENAI_API_KEY"] = "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"
+    os.environ["OPENAI_API_KEY"] = "YOUR-KEY"
 
     embed_model = OpenAIEmbedding(model="text-embedding-3-small")
     llm = OpenAI(model="gpt-3.5-turbo-0125", max_tokens=2048, temperature=0.7)
