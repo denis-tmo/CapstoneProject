@@ -33,10 +33,10 @@ async def init_lama():
     nest_asyncio.apply()
 
     # API access to llama-cloud
-    os.environ["LLAMA_CLOUD_API_KEY"] = "YOUR-KEY"
+    os.environ["LLAMA_CLOUD_API_KEY"] = "llx-AeNyqvRRuEvvT9uTPm6HgsWc6wJlFktF2bXu3xvQ16pu8doh"
 
     # Using OpenAI API for embeddings/llms
-    os.environ["OPENAI_API_KEY"] = "YOUR-KEY"
+    os.environ["OPENAI_API_KEY"] = "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"
 
     embed_model = OpenAIEmbedding(model="text-embedding-3-small")
     llm = OpenAI(model="gpt-3.5-turbo-0125", max_tokens=2048, temperature=0.7)
@@ -66,17 +66,6 @@ async def init_lama():
     recursive_index = VectorStoreIndex(nodes=base_nodes + objects)
     raw_index = VectorStoreIndex.from_documents(documents)
     
-#    return recursive_index, raw_index
-
-    if False:
-        documents = LlamaParse(result_type="markdown").load_data("wheeler_napoleon.pdf")
-
-        nodes = node_parser.get_nodes_from_documents(documents)
-        base_nodes, objects = node_parser.get_nodes_and_objects(nodes)
-
-        recursive_index = VectorStoreIndex(nodes=base_nodes + objects)
-        raw_index = VectorStoreIndex.from_documents(documents)
-
     reranker = FlagEmbeddingReranker(
         top_n=5,
         model="BAAI/bge-reranker-large",

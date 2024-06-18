@@ -16,54 +16,77 @@
     .separator {
         margin: 20px 0;
         border: 2px dashed #6b82e1;
-
     }
     .center-container {
         text-align: center;
     }
 </style>
 <body>
-    <div >
-        <form id="capstone" method="post">
+    <div>
+        <form id="capstone">
             <div class="center-container">
+                <label for="base_selection">Choose a subject:</label>
+                <br>
+                <select id="base_selection" name="base_selection" required class="medium-input">
+                    <option value="subject_1" selected>1. Anything...</option>
+                    <option value="subject_2">2. Napoleon Bonaparte</option>
+                <!--
+                    <option value="subject_3">3. Mahatma Gandhi</option>
+                -->
+                </select>
+                <br><br>
                 <label for="message">Your question:</label>
-            </div>
-
-            <input type="text" id="message" name="message" required class="wide-input">
-        
-            <br><br>
-
-            <div class="center-container">
-
-            <label for="selection">Choose an option:</label>
-            <br>
-            <select id="selection" name="selection" required class="medium-input">
-                <option value="option_1">1. Ask questions as a 'chat message' in the OpenAI ChatML format</option>
-                <option value="option_2">2. Ask questions about Napoleon Bonaparte using a qdrant search</option>
-                <option value="option_3">3. Ask questions about Napoleon Bonaparte using LLM</option>
-                <option value="option_4">4. Ask questions about Napoleon Bonaparte using Lama-Cloud, LlamaParse</option>
-                <option value="option_5">5. Ask questions about Napoleon Bonaparte using Langchain</option>
-            </select>
+                <br>
+                <input type="text" id="message" name="message" required class="wide-input">
             </div>
             <br><br>
-
+            <div class="center-container">
+                <label for="option_selection">Choose an option:</label>
+                <br>
+                <select id="option_selection" name="option_selection" required class="medium-input">
+                    <option value="option_1" selected>1. Ask questions as a 'chat message' in the OpenAI ChatML format</option>
+                    <option value="option_2">2. Ask questions about Napoleon Bonaparte using a qdrant search</option>
+                    <option value="option_3">3. Ask questions about Napoleon Bonaparte using LLM</option>
+                    <option value="option_4">4. Ask questions about Napoleon Bonaparte using Lama-Cloud, LlamaParse</option>
+                    <option value="option_5">5. Ask questions about Napoleon Bonaparte using Langchain</option>
+                </select>
+            </div>
+            <br><br>
             <div class="center-container">
                 <hr class="separator" required class="full-input">
-                <button type="submit">Send</button>
+                <button type="submit" onclick="addQueryParam()">Send your question</button>
                 <hr class="separator" required class="full-input">
             </div>
-        </div>
-    </form>
 
-        {% if messages_and_responses %}
-            {% for item in messages_and_responses %}
-                <p><strong>Question: </strong> {{item.message }}</p>
-                <p><strong>  Answer: </strong></p><p> {{item.response }}</p>
-                <hr>
-            {% endfor %}
-        {% endif %}
+            {% if messages_and_responses | length > 0 %}
+                {% for item in messages_and_responses %}
+                    {% if item.message | length > 0 %}
+                    <hr class="separator" required class="full-input">
+                        <p><strong>Question:</strong> {{ item.message | highlight_selection | safe }}</p>
+                        <p><strong>Response:</strong> {{ item.response | highlight_response | highlight_engine | safe }}</p>
+                        {% endif %}
+                {% endfor %}    
+            {% endif %}
+        </form>
     </div>
 </body>
-<script> 
-</script> 
+<script>
+
+function addQueryParam() {
+    const form = document.getElementById('capstone');
+    const url = new URL(window.location.href);
+    url.searchParams.set('button_clicked', 'true');
+    form.action = url.toString();
+}
+
+window.onload = function() {
+    if (!window.performance) return;
+    if (performance.navigation.type === 1) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('reloaded', 'true');
+        window.location.href = url.toString();
+    }
+};
+
+</script>
 </html>

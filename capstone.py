@@ -269,7 +269,7 @@ async def open_ai_chat(message):
     chat_request = ChatRequest(messages=[ChatMessage(content=message, role="user")])
     
     response = await process_chat(chat_request, token)
-#    print(f'open_ai_chat response: {response}')
+    print(f'open_ai_chat message: {message} response: {response}')
 
     return response
 
@@ -287,63 +287,105 @@ def qdrant_search(client, message):
 #
 #########################################################################################################
 
-@app_flask.route('/', methods=['GET', 'POST'])
-async def post_form():
+@app_flask.template_filter('highlight_selection')
+def highlight_selection(text):
+    if 'with selection:' in text:
+        text = text.replace('with selection:', '<strong><em>with selection:</strong></em>')
+    return text
 
-    global first, messages_and_responses
+@app_flask.template_filter('highlight_response')
+def highlight_response(text):
+    if 'Basic Query Engine:'in text:
+        text = text.replace('Basic Query Engine:', '<strong><br>&nbsp;Basic Query Engine: </strong>')
+    if 'Recursive Retriever Query Engine:' in text:
+        text = text.replace('Recursive Retriever Query Engine:', '<strong><br>&nbsp;Recursive Retriever Query Engine: </strong>')
+    return text
 
-    print(f'post_form -- {first} method: {request.method}')
-    if first:
-        first = False
-        messages_and_responses = []
-        return render_template('index.html', messages_and_responses=None)
+@app_flask.template_filter('highlight_engine')
+def highlight_engine(text):
+    if 'Base Engine Response:'in text:
+        text = text.replace('Base Engine Response:', '<strong><br>&nbsp;Base Engine Response: </strong>')
+    if 'Reorder Engine Response:' in text:
+        text = text.replace('Reorder Engine Response:', '<br><strong>&nbsp;Reorder Engine Response: </strong>')
+    return text
 
-    message = request.form.get('message', '')
-    selection = request.form.get('selection')
+app_flask.jinja_env.filters['highlight_selection'] = highlight_selection
+app_flask.jinja_env.filters['highlight_response'] = highlight_response
+app_flask.jinja_env.filters['highlight_engine'] = highlight_engine
+
+@app_flask.route('/', methods=['GET'])
+async def get_form():
+
+    global messages_and_responses
+
+    message = request.args.get('message', '')
+    base_selection = request.args.get('base_selection', 'subject_1')
+    option_selection = request.args.get('option_selection', 'option_1')
+    button_clicked = request.args.get('button_clicked', 'false')
+    reloaded = request.args.get('reloaded', 'false')
     
-    if message is None or message == '':
-        message = ''
-        response = 'Please enter your question'
-        messages_and_responses.append({'message': '', 'selection': -1, 'response': ''})
-    else:
+    print(f'\n\nbutton_clicked: {button_clicked}, reloaded: {reloaded} method: {request.method}')
 
-#        print(f'Process message: {message} with selection: {selection}')
-        if selection == 'option_1':
+    if button_clicked == 'true':
+        print("The page was reloaded due to button click.")
+    elif reloaded == 'true':
+        print("The page was reloaded due to browser refresh.")
+        messages_and_responses = []
+        messages_and_responses.append({'message': '', 'base_selection': -1, 'response': ''})
+        return render_template('index.html', messages_and_responses=messages_and_responses)
+    else:
+        print("The page was loaded normally.")
+
+    if base_selection == 'subject_1':
+
+        if option_selection != 'option_1':
+            pass
+#            response = 'Choose option 1'
+#            messages_and_responses.append({'message': 'Invalid selection', 'base_selection': -1, 'response': response})
+
+#            return render_template('index.html', messages_and_responses=messages_and_responses)
+
+    print(f'Process message: {message} with base_selection: {base_selection} option_selection: {option_selection}')
+
+    if len(message) == 0:
+        message = 'Hello'
+        response = 'Please ask me a question'
+    else:
+        if option_selection == 'option_1':
             response = await open_ai_chat(message)
 
-        elif selection == 'option_2':
+        elif option_selection == 'option_2':
             response = qdrant_search(client, message)
 
-        elif selection == 'option_3':
+        elif option_selection == 'option_3':
             doc_emb = init_embed( client, '' )    
             response = get_embed_answer(client, doc_emb, message)
 
-        elif selection == 'option_4':
+        elif option_selection == 'option_4':
             recursive_qe, raw_qe = await init_lama()
             loop = asyncio.get_event_loop()
             recursive_qe, raw_qe = loop.run_until_complete(init_lama())
             response = get_lama_answer( message, recursive_qe, raw_qe )
 
-        elif selection == 'option_5':
+        elif option_selection == 'option_5':
             response = get_rag_answer( message )
 
         else:
             response = 'Please select a search option in the listbox'
-            selection = 'None'
-            
-        selection = selection.replace( '_', ' ')
-        message += ' (' + selection + ')'
-        messages_and_responses.append({'message': message, 'selection': selection, 'response': response})
+            option_selection = 'None'
+        
+    base_selection = base_selection.replace( '_', ' ')
+    option_selection = option_selection.replace( '_', ' ')
+    message += ' with selection: ' + base_selection + ' and ' + option_selection
+    messages_and_responses.append({'message': message, 'base_selection': base_selection, 'response': response})
 
     return render_template('index.html', messages_and_responses=messages_and_responses)
 
 if __name__ == "__main__":
 
-    global first
     # Initialize messages_and_responses
     global messages_and_responses
     
-    first = True
     messages_and_responses = []
 
     if dkl_fly == 1:
@@ -351,4 +393,4 @@ if __name__ == "__main__":
         uvicorn.run(app_fast, host="0.0.0.0", port=8000)
 
     else:
-        app_flask.run(debug=True)
+        app_flask.run(debug=True, port=5000)
