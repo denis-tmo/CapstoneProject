@@ -34,12 +34,8 @@
                     <option value="subject_3">3. Mahatma Gandhi</option>
                 -->
                 </select>
-                <br><br>
-                <label for="message">Your question:</label>
-                <br>
-                <input type="text" id="message" name="message" required class="wide-input">
             </div>
-            <br><br>
+            <br>
             <div class="center-container">
                 <label for="option_selection">Choose an option:</label>
                 <br>
@@ -50,6 +46,13 @@
                     <option value="option_4">4. Ask questions about Napoleon Bonaparte using Lama-Cloud, LlamaParse</option>
                     <option value="option_5">5. Ask questions about Napoleon Bonaparte using Langchain</option>
                 </select>
+            </div>
+
+            <br>
+            <div class="center-container">
+                <label for="message">Your question:</label>
+                <br>
+                <input type="text" id="message" name="message" required class="wide-input">
             </div>
             <br><br>
             <div class="center-container">
@@ -62,8 +65,8 @@
                 {% for item in messages_and_responses %}
                     {% if item.message | length > 0 %}
                     <hr class="separator" required class="full-input">
-                        <p><strong>Question:</strong> {{ item.message | highlight_selection | safe }}</p>
-                        <p><strong>Response:</strong> {{ item.response | highlight_response | highlight_engine | safe }}</p>
+                        <p><strong>Question:</strong style="color: green;"> {{ item.message | highlight_selection | safe }}</p>
+                        <p><strong>Response:</strong style="color: bue;"> {{ item.response | highlight_response | highlight_engine | safe }}</p>
                         {% endif %}
                 {% endfor %}    
             {% endif %}
